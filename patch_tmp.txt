@@ -1,0 +1,147 @@
+(function (v) {
+  const rep = function (a, b, all) {
+    if (!v.includes(a)) throw new Error('introuvable : ' + a.slice(0, 80));
+    v = all ? v.split(a).join(b) : v.replace(a, function () { return b; });
+  };
+  rep("'Dossier affiches', 'Remarque']", "'Dossier affiches', 'Remarque', 'Publication', 'Mail apres publication']");
+  rep("affiches: String(v[10]).trim()", "affiches: String(v[10]).trim(), mode: low(v[12]) || 'auto', apres: low(v[13]) === 'oui'");
+  rep("    if (statut === 'Publié' || statut === 'Refusé' || validation.indexOf('Terminé') === 0) continue;",
+    "    if (String(r[C.RESEAU]) === 'Tâche' || statut === 'À publier à la main') continue;\n" +
+    "    if (statut === 'Publié') { if (validation.indexOf('Terminé : publié') === 0 && validation.indexOf('Confirmation') < 0) sendAfter_(sh, rows, i, pages, now); continue; }\n" +
+    "    if (statut === 'Refusé' || validation.indexOf('Terminé') === 0) continue;");
+  rep("  try {\n    const id = pg.reseau === 'Facebook' ? postFacebook_(pg, String(r[C.TEXTE]), String(r[C.VISUEL])) : postLinkedIn_(pg, String(r[C.TEXTE]), String(r[C.VISUEL]));",
+    "  if (pg.mode === 'rappel') {\n    sendReminder_(r, pg);\n    sh.getRange(line, C.STATUT + 1).setValue('À publier à la main');\n    mark_(sh, line, 'En cours : rappel envoyé le ' + stamp_(new Date()));\n    return;\n  }\n" +
+    "  try {\n    const t = String(r[C.TEXTE]), vis = String(r[C.VISUEL]);\n    const id = pg.reseau === 'Facebook' ? postFacebook_(pg, t, vis) : (pg.reseau === 'Instagram' ? postInstagram_(pg, t, vis) : postLinkedIn_(pg, t, vis));");
+  rep("function postFacebook_(pg, message, visuel) {\n  const tok = fbToken_(pg);",
+    "function postFacebook_(pg, message, visuel) {\n  const tok = fbToken_(pg);\n" +
+    "  const many = urls_(visuel);\n" +
+    "  if (many.length > 1) {\n" +
+    "    const ids = many.slice(0, 10).map(function (u) {\n" +
+    "      const rr = UrlFetchApp.fetch('https://graph.facebook.com/' + pg.id + '/photos', { method: 'post', muteHttpExceptions: true, payload: { url: u, published: 'false', access_token: tok } });\n" +
+    "      const jj = JSON.parse(rr.getContentText());\n" +
+    "      if (!jj.id) throw new Error('Photo refusée : ' + rr.getContentText().slice(0, 200));\n" +
+    "      return jj.id;\n" +
+    "    });\n" +
+    "    const payload = { message: message, access_token: tok };\n" +
+    "    ids.forEach(function (id, k) { payload['attached_media[' + k + ']'] = JSON.stringify({ media_fbid: id }); });\n" +
+    "    const rc = UrlFetchApp.fetch('https://graph.facebook.com/' + pg.id + '/feed', { method: 'post', muteHttpExceptions: true, payload: payload });\n" +
+    "    const jc = JSON.parse(rc.getContentText());\n" +
+    "    if (!jc.id) throw new Error(rc.getContentText().slice(0, 300));\n" +
+    "    return jc.id;\n" +
+    "  }");
+  rep("if ((a !== 'ok' && a !== 'no') || !id", "if ((a !== 'ok' && a !== 'no' && a !== 'done') || !id");
+  rep("    if (String(rows[i][C.STATUT]) === 'Publié') return page_('Ce post est déjà publié. Rien à changer.');",
+    "    if (String(rows[i][C.STATUT]) === 'Publié') return page_('Ce post est déjà publié. Rien à changer.');\n" +
+    "    if (a === 'done') { sh.getRange(line, C.STATUT + 1).setValue('Publié'); mark_(sh, line, 'Terminé : publié à la main le ' + stamp_(new Date())); return page_('Merci, le post est marqué comme publié.'); }");
+  rep("rule(['Facebook', 'LinkedIn'])", "rule(['Facebook', 'Instagram', 'LinkedIn', 'Tâche'])", true);
+  rep("rule(['Rédigé', 'Jour J', 'Alerte'])", "rule(['Rédigé', 'Jour J', 'Alerte', 'À confirmer', 'Tâche'])");
+  rep("rule(['Brouillon', 'À rédiger', 'À valider', 'Validé', 'Refusé', 'Publié'])", "rule(['Brouillon', 'À rédiger', 'À faire', 'À valider', 'Validé', 'Refusé', 'À publier à la main', 'Publié'])");
+  rep("  pgs.getRange(2, 8, 200, 2).setDataValidation(rule(['oui', 'non']));",
+    "  pgs.getRange(2, 8, 200, 2).setDataValidation(rule(['oui', 'non']));\n  pgs.getRange(2, 13, 200, 1).setDataValidation(rule(['auto', 'rappel']));\n  pgs.getRange(2, 14, 200, 1).setDataValidation(rule(['oui', 'non']));");
+  rep("  cal.setFrozenRows(1);",
+    "  cal.setFrozenRows(1);\n  cal.setConditionalFormatRules([SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=OR($M2=\"Publié\",$M2=\"Validé\")').setFontColor('#d93025').setStrikethrough(true).setRanges([cal.getRange(2, 1, 1000, 15)]).build()]);");
+  rep("[11, 340], [12, 260]]", "[11, 340], [12, 260], [13, 100], [14, 140]]");
+  v += String.raw`
+
+function urls_(s) { return String(s || '').split(/\s+/).filter(function (u) { return /^https?:\/\//.test(u); }); }
+
+function sendReminder_(r, pg) {
+  const base = webappUrl_(), id = String(r[C.ID]);
+  const done = base + '?a=done&id=' + encodeURIComponent(id) + '&s=' + sign_(id + 'done');
+  const imgs = urls_(r[C.VISUEL]).map(function (u) { return '<p><img src="' + esc_(u) + '" style="max-width:100%;border-radius:8px"></p>'; }).join('');
+  const html = '<div style="font-family:Arial,sans-serif;max-width:620px;margin:auto;color:#0b1f3a">' +
+    '<div style="background:#0b1f3a;color:#ffffff;padding:18px 22px;border-radius:10px 10px 0 0"><strong>À publier maintenant</strong><br>' + esc_(pg.nom) + ' · ' + esc_(id) + '</div>' +
+    '<div style="border:1px solid #d6dde8;border-top:none;padding:20px 22px;border-radius:0 0 10px 10px">' +
+    '<p style="color:#4a5b73;margin-top:0">Ce canal se publie à la main. Copie le texte, enregistre les images, publie, puis clique sur le bouton.</p>' + imgs +
+    '<div style="background:#f3f6fb;border-radius:8px;padding:16px;line-height:1.55;white-space:pre-wrap">' + esc_(r[C.TEXTE]) + '</div>' +
+    '<p style="margin:20px 0"><a href="' + done + '" style="display:inline-block;padding:12px 22px;border-radius:8px;background:#1f5fbf;color:#ffffff;text-decoration:none;font-weight:600">J\'ai publié</a></p>' +
+    '</div></div>';
+  const o = { to: pg.email || adminMail_(), subject: 'À publier maintenant : ' + pg.nom + ' ' + id, htmlBody: html, name: 'Agent social media' };
+  if (pg.copie) o.cc = pg.copie;
+  MailApp.sendEmail(o);
+}
+
+function sendAfter_(sh, rows, i, pages, now) {
+  const r = rows[i], line = i + 1, t = pubTime_(r), v = String(r[C.VALIDATION]);
+  const pg = pageFor_(pages, r);
+  if (!pg || now - t < 5 * 60000) return;
+  if (!pg.apres || now - t > 3 * 3600000) { mark_(sh, line, v + ' | Confirmation non envoyée'); return; }
+  const nom = String(r[C.PAGE] || '').trim();
+  const next = [], tasks = [];
+  for (let k = 1; k < rows.length; k++) {
+    const x = rows[k];
+    if (!x[C.ID] || k === i) continue;
+    const st = String(x[C.STATUT]);
+    if (String(x[C.RESEAU]) === 'Tâche') { if (st === 'À faire' && tasks.length < 4) tasks.push(x); continue; }
+    if (String(x[C.PAGE] || '').trim() !== nom || st === 'Publié' || st === 'Refusé' || st === 'À publier à la main') continue;
+    const tx = pubTime_(x);
+    if (tx > now) next.push({ t: tx, x: x });
+  }
+  next.sort(function (a, b) { return a.t - b.t; });
+  const li = function (arr) { return arr.length ? '<ul>' + arr.join('') + '</ul>' : '<p style="color:#4a5b73">Rien pour le moment.</p>'; };
+  const nextHtml = li(next.slice(0, 5).map(function (n) { return '<li>' + esc_(heureFr_(n.t)) + ' : ' + esc_(n.x[C.SUJET]) + ' (' + esc_(n.x[C.ID]) + ')</li>'; }));
+  const taskHtml = li(tasks.map(function (x) { return '<li>' + esc_(heureFr_(pubTime_(x))) + ' : ' + esc_(x[C.SUJET]) + '</li>'; }));
+  const html = '<div style="font-family:Arial,sans-serif;max-width:620px;margin:auto;color:#0b1f3a">' +
+    '<div style="background:#0b1f3a;color:#ffffff;padding:18px 22px;border-radius:10px 10px 0 0"><strong>Publié</strong><br>' + esc_(pg.nom) + ' · ' + esc_(r[C.ID]) + ' · ' + esc_(heureFr_(t)) + '</div>' +
+    '<div style="border:1px solid #d6dde8;border-top:none;padding:20px 22px;border-radius:0 0 10px 10px">' +
+    '<p><b>' + esc_(r[C.SUJET]) + '</b> est parti sur <b>' + esc_(pg.nom) + '</b>.</p><p style="color:#4a5b73;font-size:13px">' + esc_(v) + '</p>' +
+    '<h3 style="margin-bottom:4px">Prochaines publications</h3>' + nextHtml +
+    '<h3 style="margin-bottom:4px">Tâches à faire</h3>' + taskHtml +
+    '</div></div>';
+  const o = { to: pg.email || adminMail_(), subject: 'Publié : ' + pg.nom + ' ' + r[C.ID] + ' à ' + Utilities.formatDate(t, tz_(), 'HH:mm'), htmlBody: html, name: 'Agent social media' };
+  if (pg.copie) o.cc = pg.copie;
+  MailApp.sendEmail(o);
+  mark_(sh, line, v + ' | Confirmation envoyée le ' + stamp_(now));
+}
+
+function igUser_(pg, tok) {
+  const res = UrlFetchApp.fetch('https://graph.facebook.com/' + pg.id + '?fields=instagram_business_account&access_token=' + encodeURIComponent(tok), { muteHttpExceptions: true });
+  const j = JSON.parse(res.getContentText());
+  if (!j.instagram_business_account) throw new Error('Compte Instagram professionnel non relié à cette Page, ou droits Instagram manquants : ' + res.getContentText().slice(0, 200));
+  return j.instagram_business_account.id;
+}
+
+function igCall_(path, payload) {
+  const res = UrlFetchApp.fetch('https://graph.facebook.com/' + path, { method: 'post', muteHttpExceptions: true, payload: payload });
+  const j = JSON.parse(res.getContentText());
+  if (!j.id) throw new Error('Instagram : ' + res.getContentText().slice(0, 300));
+  return j.id;
+}
+
+function igWait_(id, tok) {
+  for (let k = 0; k < 8; k++) {
+    const j = JSON.parse(UrlFetchApp.fetch('https://graph.facebook.com/' + id + '?fields=status_code&access_token=' + encodeURIComponent(tok), { muteHttpExceptions: true }).getContentText());
+    if (j.status_code === 'FINISHED') return;
+    if (j.status_code === 'ERROR') throw new Error('Instagram a refusé l\'image.');
+    Utilities.sleep(3000);
+  }
+}
+
+function postInstagram_(pg, caption, visuel) {
+  const tok = fbToken_(pg), ig = igUser_(pg, tok), urls = urls_(visuel).slice(0, 10);
+  if (!urls.length) throw new Error('Instagram exige une image.');
+  let creation;
+  if (urls.length === 1) creation = igCall_(ig + '/media', { image_url: urls[0], caption: caption, access_token: tok });
+  else {
+    const kids = urls.map(function (u) { const c = igCall_(ig + '/media', { image_url: u, is_carousel_item: 'true', access_token: tok }); igWait_(c, tok); return c; });
+    creation = igCall_(ig + '/media', { media_type: 'CAROUSEL', children: kids.join(','), caption: caption, access_token: tok });
+  }
+  igWait_(creation, tok);
+  return igCall_(ig + '/media_publish', { creation_id: creation, access_token: tok });
+}
+
+// Copie l'onglet "Import Roots" (CSV importé) vers le Calendrier, sans doublon.
+function importRoots() {
+  const ss = SpreadsheetApp.getActive(), src = ss.getSheetByName('Import Roots'), cal = cal_();
+  if (!src) { alert_('Import Roots', 'Onglet Import Roots introuvable.', null); return; }
+  const dv = function (x, p) { return x instanceof Date ? Utilities.formatDate(x, tz_(), p) : String(x); };
+  const ids = cal.getLastRow() > 1 ? cal.getRange(2, 1, cal.getLastRow() - 1, 1).getValues().map(function (r) { return String(r[0]); }) : [];
+  const data = src.getRange(2, 1, src.getLastRow() - 1, 15).getValues().filter(function (r) { return r[0] && ids.indexOf(String(r[0])) < 0; }).map(function (r) {
+    const x = r.slice(); x[1] = dv(x[1], 'yyyy-MM-dd'); x[2] = dv(x[2], 'HH:mm'); return x.map(function (c) { return typeof c === 'string' ? c : String(c); });
+  });
+  if (data.length) { const rg = cal.getRange(cal.getLastRow() + 1, 1, data.length, 15); rg.setNumberFormat('@'); rg.setValues(data); }
+  alert_('Import Roots', data.length + ' lignes ajoutées au Calendrier.', null);
+}
+`;
+  return v;
+})
