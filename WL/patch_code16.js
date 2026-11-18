@@ -1,0 +1,18 @@
+// ===================================================================
+// Radar equilibre : tous les domaines au meme niveau de priorite, veille elargie (2026-11-18)
+// ===================================================================
+Object.assign(RAD_W, { benin: 1.25, afrique: 1.25, crypto: 1.0, sport: 0.9, autresport: 1.05, sante: 1.05, tech: 1.05, finance: 1.2, monde: 1.35, politique: 1.35, actu: 1.05, culture: 1.05 });
+RAD_WATCH.push(
+  ['élection présidentielle débat', 'politique'], ['Union africaine OR CEDEAO sommet', 'politique'], ['AES Mali Burkina Niger junte', 'politique'], ['Assemblée nationale gouvernement réforme', 'politique'], ['Maroc Algérie relations diplomatiques', 'politique'], ['présidentielle OR législatives OR scrutin Afrique', 'politique'],
+  ['sommet Chine Russie États-Unis', 'monde'], ['guerre Soudan', 'monde'], ['Ukraine Russie négociations', 'monde'], ['Gaza Israël cessez-le-feu', 'monde'], ['Iran nucléaire', 'monde'], ['Chine Taïwan', 'monde'], ['OTAN Europe défense', 'monde'], ['RDC M23 Rwanda', 'monde'], ['attaque terroriste Sahel', 'monde'], ['Syrie Liban Yémen', 'monde'],
+  ['Maroc actualité', 'afrique'], ['Algérie actualité', 'afrique'], ['Tunisie actualité', 'afrique'], ['Égypte actualité', 'afrique'], ['Libye actualité', 'afrique'], ['Cameroun OR Gabon OR Tchad actualité', 'afrique'], ['Kenya OR Éthiopie OR Tanzanie actualité', 'afrique'], ['Afrique du Sud actualité', 'afrique'],
+  ['pétrole prix baril OPEP', 'finance'], ['gaz GNL Afrique énergie', 'finance'], ['Bourse Wall Street marchés', 'finance'], ['FMI Banque mondiale Afrique', 'finance'], ['dette Afrique', 'finance'], ['or cours matières premières cacao café coton', 'finance'], ['inflation FCFA BCEAO', 'finance'],
+  ['Bénin GDIZ investissement industrie', 'benin'], ['Bénin port de Cotonou', 'benin'], ['Bénin tourisme hôtellerie', 'benin'], ['Bénin startup innovation numérique', 'benin'], ['Bénin agriculture ananas anacarde coton', 'benin'], ['Bénin infrastructures routes projet', 'benin'], ['Bénin culture festival', 'benin'],
+  ['hôtellerie ouverture hôtel Afrique', 'actu'], ['restauration gastronomie africaine chef', 'actu'], ['tourisme Afrique record voyageurs', 'actu'], ['compagnie aérienne Afrique nouvelle ligne', 'actu'], ['décès hommage célèbre', 'actu'], ['nomination PDG OR ministre OR président', 'actu'], ['prix Nobel OR prix littéraire', 'culture'], ['Fashion Week créateur africain', 'culture'], ['Festival de Cannes OR FESPACO OR Oscars', 'culture'], ['musique Afrique Grammy Afrobeats', 'culture'],
+  ['découverte scientifique', 'tech'], ['NASA ESA espace mission', 'tech'], ['climat rapport COP', 'tech'], ['cybersécurité piratage fuite de données', 'tech'], ['Starlink OR 5G Afrique', 'tech'], ['startup Afrique levée de fonds', 'tech'], ['médecine avancée cancer vaccin recherche', 'sante'], ['OMS épidémie Afrique', 'sante'], ['paludisme OR Ebola OR choléra', 'sante'],
+  ['tennis ATP WTA', 'autresport'], ['basketball NBA Afrobasket', 'autresport'], ['athlétisme record', 'autresport'], ['cyclisme Tour', 'autresport'], ['golf OR natation OR judo', 'autresport'], ['UFC OR boxe combat', 'autresport'], ['handball OR volley-ball', 'autresport']
+);
+RAD_FASTQ.push(
+  ['élection présidentielle débat', 'politique'], ['Union africaine OR CEDEAO sommet', 'politique'], ['guerre Soudan', 'monde'], ['pétrole prix baril OPEP', 'finance'], ['Maroc OR Algérie OR Tunisie', 'afrique'], ['Bénin GDIZ investissement', 'benin'],
+  ['découverte scientifique', 'tech'], ['décès hommage célèbre', 'actu'], ['Bourse Wall Street marchés', 'finance'], ['Fashion Week OR Cannes OR Oscars', 'culture'], ['tennis OR basket NBA OR athlétisme', 'autresport'], ['hôtel OR restaurant OR tourisme Afrique', 'actu']
+);
